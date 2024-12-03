@@ -4,7 +4,7 @@ const clearBtn = document.getElementById("clear-btn");
 
 // Cargar empleados almacenados al inicio
 document.addEventListener("DOMContentLoaded", () => {
-  const employees = JSON.parse(localStorage.getItem("employees")) || [];
+  const employees = getEmployeesFromStorage();
   employees.forEach((employee) => addEmployeeToTable(employee));
 });
 
@@ -18,7 +18,7 @@ form.addEventListener("submit", (event) => {
     const employee = { name, position };
 
     // Guardar en localStorage
-    const employees = JSON.parse(localStorage.getItem("employees")) || [];
+    const employees = getEmployeesFromStorage();
     employees.push(employee);
     localStorage.setItem("employees", JSON.stringify(employees));
 
@@ -30,6 +30,8 @@ form.addEventListener("submit", (event) => {
 
     // Limpiar el formulario
     form.reset();
+  } else {
+    alert("Please fill out all fields before submitting.");
   }
 });
 
@@ -41,6 +43,11 @@ clearBtn.addEventListener("click", () => {
     showNotification("Records Cleared", "All employee records have been deleted.");
   }
 });
+
+// Obtener empleados desde localStorage
+function getEmployeesFromStorage() {
+  return JSON.parse(localStorage.getItem("employees")) || [];
+}
 
 // Agregar empleado a la tabla
 function addEmployeeToTable(employee) {
