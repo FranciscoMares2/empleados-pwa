@@ -3,51 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Manager</title>
+  <title>Gestion de Empleados</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="manifest" href="manifest.json">
 </head>
 <body class="bg-gray-900 text-white font-sans">
   <div class="container mx-auto py-10 px-4">
-    <h1 class="text-3xl font-bold mb-6 text-center">Employee Manager</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center">Gestion de Empleados</h1>
 
     <!-- Install Button -->
     <div class="text-center mb-6">
       <button id="install-btn" class="hidden bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-white">
-        Install App
+        Instalar App
       </button>
     </div>
 
     <!-- Form -->
     <form id="employee-form" class="bg-gray-800 p-6 rounded-md shadow-md">
       <div class="mb-4">
-        <label for="name" class="block text-sm font-medium">Name</label>
+        <label for="name" class="block text-sm font-medium">Nombre</label>
         <input type="text" id="name" class="w-full mt-2 p-2 bg-gray-700 rounded" required>
       </div>
       <div class="mb-4">
-        <label for="role" class="block text-sm font-medium">Role</label>
+        <label for="role" class="block text-sm font-medium">Cargo</label>
         <input type="text" id="role" class="w-full mt-2 p-2 bg-gray-700 rounded" required>
       </div>
-      <button type="submit" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-white w-full">Add Employee</button>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-white w-full">Añadir Empleado</button>
     </form>
 
     <!-- Table -->
     <div class="overflow-x-auto mt-6">
-      <table class="w-full bg-gray-800 rounded shadow-md">
-        <thead>
-          <tr>
-            <th class="py-2 px-4 text-left">Name</th>
-            <th class="py-2 px-4 text-left">Role</th>
-          </tr>
-        </thead>
-        <tbody id="employee-table">
-          <!-- Dynamic content -->
-        </tbody>
-      </table>
-    </div>
-  </div>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">Lista de Empleados</h2>
+          <button id="clear-btn" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white">
+             Limpiar Lista
+          </button>
+        </div>
+        <table class="w-full bg-gray-800 rounded shadow-md">
+          <thead>
+            <tr>
+              <th class="py-2 px-4 text-left">Nombre</th>
+              <th class="py-2 px-4 text-left">Cargo</th>
+            </tr>
+          </thead>
+          <tbody id="employee-table">
+            <!-- Dynamic content -->
+          </tbody>
+        </table>
+      </div>
+      
 
   <script src="app.js"></script>
 </body>
 </html>
-
