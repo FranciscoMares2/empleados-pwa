@@ -2,40 +2,49 @@ const form = document.getElementById("employee-form");
 const table = document.getElementById("employee-table");
 const clearBtn = document.getElementById("clear-btn");
 
-// Cargar empleados almacenados al inicio
-document.addEventListener("DOMContentLoaded", () => {
-  const employees = getEmployeesFromStorage();
-  employees.forEach((employee) => addEmployeeToTable(employee));
-});
+// Event listener for form submission
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-// Manejar el formulario
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
   const name = document.getElementById("name").value.trim();
-  const position = document.getElementById("position").value.trim();
+  const role = document.getElementById("role").value.trim();
 
-  if (name && position) {
-    const employee = { name, position };
-
-    // Guardar en localStorage
-    const employees = getEmployeesFromStorage();
-    employees.push(employee);
-    localStorage.setItem("employees", JSON.stringify(employees));
-
-    // Agregar a la tabla
-    addEmployeeToTable(employee);
-
-    // Mostrar notificación
-    showNotification("Employee Added", `${name} (${position}) was added successfully.`);
-
-    // Limpiar el formulario
+  if (name && role) {
+    addEmployeeToTable(name, role);
+    saveEmployee(name, role);
     form.reset();
-  } else {
-    alert("Please fill out all fields before submitting.");
+    showNotification("Employee Added", `${name} was successfully added.`);
   }
 });
 
-// Limpiar los registros
+// Add employee to the table
+function addEmployeeToTable(name, role) {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td class="py-2 px-4">${name}</td>
+    <td class="py-2 px-4">${role}</td>
+  `;
+  table.appendChild(row);
+}
+
+// Save employee to localStorage
+function saveEmployee(name, role) {
+  const employees = JSON.parse(localStorage.getItem("employees")) || [];
+  employees.push({ name, role });
+  localStorage.setItem("employees", JSON.stringify(employees));
+}
+
+// Load employees on page load
+window.addEventListener("load", () => {
+  const employees = JSON.parse(localStorage.getItem("employees")) || [];
+  employees.forEach((employee) => addEmployeeToTable(employee.name, employee.role));
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+  }
+});
+
+// Clear table and localStorage
 clearBtn.addEventListener("click", () => {
   if (confirm("Are you sure you want to clear all records?")) {
     localStorage.removeItem("employees");
@@ -44,26 +53,11 @@ clearBtn.addEventListener("click", () => {
   }
 });
 
-// Obtener empleados desde localStorage
-function getEmployeesFromStorage() {
-  return JSON.parse(localStorage.getItem("employees")) || [];
-}
-
-// Agregar empleado a la tabla
-function addEmployeeToTable(employee) {
-  const row = document.createElement("tr");
-  row.innerHTML = `
-    <td class="border px-4 py-2">${employee.name}</td>
-    <td class="border px-4 py-2">${employee.position}</td>
-  `;
-  table.appendChild(row);
-}
-
-// Mostrar notificación
+// Show notification
 function showNotification(title, body) {
   if (Notification.permission === "granted") {
     new Notification(title, { body });
-  } else {
+  } else if (Notification.permission !== "denied") {
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
         new Notification(title, { body });
