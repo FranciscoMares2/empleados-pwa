@@ -1,76 +1,62 @@
-let deferredPrompt;
-const installBtn = document.getElementById("install-btn");
-
-// Detect if PWA can be installed
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.classList.remove("hidden");
-});
-
-installBtn.addEventListener("click", async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      console.log("PWA installed successfully");
-    }
-    deferredPrompt = null;
-    installBtn.classList.add("hidden");
-  }
-});
-
-// Add other app.js logic here...
 const form = document.getElementById("employee-form");
 const table = document.getElementById("employee-table");
+const clearBtn = document.getElementById("clear-btn");
 
-// Event listener for form submission
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+// Cargar empleados almacenados al inicio
+document.addEventListener("DOMContentLoaded", () => {
+  const employees = JSON.parse(localStorage.getItem("employees")) || [];
+  employees.forEach((employee) => addEmployeeToTable(employee));
+});
 
+// Manejar el formulario
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
   const name = document.getElementById("name").value.trim();
-  const role = document.getElementById("role").value.trim();
+  const position = document.getElementById("position").value.trim();
 
-  if (name && role) {
-    addEmployeeToTable(name, role);
-    saveEmployee(name, role);
+  if (name && position) {
+    const employee = { name, position };
+
+    // Guardar en localStorage
+    const employees = JSON.parse(localStorage.getItem("employees")) || [];
+    employees.push(employee);
+    localStorage.setItem("employees", JSON.stringify(employees));
+
+    // Agregar a la tabla
+    addEmployeeToTable(employee);
+
+    // Mostrar notificación
+    showNotification("Employee Added", `${name} (${position}) was added successfully.`);
+
+    // Limpiar el formulario
     form.reset();
-    showNotification("Employee Added", `${name} was successfully added.`);
   }
 });
 
-// Add employee to the table
-function addEmployeeToTable(name, role) {
+// Limpiar los registros
+clearBtn.addEventListener("click", () => {
+  if (confirm("Are you sure you want to clear all records?")) {
+    localStorage.removeItem("employees");
+    table.innerHTML = "";
+    showNotification("Records Cleared", "All employee records have been deleted.");
+  }
+});
+
+// Agregar empleado a la tabla
+function addEmployeeToTable(employee) {
   const row = document.createElement("tr");
   row.innerHTML = `
-    <td class="py-2 px-4">${name}</td>
-    <td class="py-2 px-4">${role}</td>
+    <td class="border px-4 py-2">${employee.name}</td>
+    <td class="border px-4 py-2">${employee.position}</td>
   `;
   table.appendChild(row);
 }
 
-// Save employee to localStorage
-function saveEmployee(name, role) {
-  const employees = JSON.parse(localStorage.getItem("employees")) || [];
-  employees.push({ name, role });
-  localStorage.setItem("employees", JSON.stringify(employees));
-}
-
-// Load employees on page load
-window.addEventListener("load", () => {
-  const employees = JSON.parse(localStorage.getItem("employees")) || [];
-  employees.forEach((employee) => addEmployeeToTable(employee.name, employee.role));
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
-  }
-});
-
-// Show notification
+// Mostrar notificación
 function showNotification(title, body) {
   if (Notification.permission === "granted") {
     new Notification(title, { body });
-  } else if (Notification.permission !== "denied") {
+  } else {
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
         new Notification(title, { body });
