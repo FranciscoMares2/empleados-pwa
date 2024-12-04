@@ -1,8 +1,61 @@
 const form = document.getElementById("employee-form");
 const table = document.getElementById("employee-table");
 const clearBtn = document.getElementById("clear-btn");
+const publicVapidKey = "BFX60-6BG7NRB2-3vR8LqrWcs3PO4S5ZBbuXb1000nyPow6CqiH6GgPwZqfuenlPHBFcH6yaeuMAekC62KKfXrE";
 
-// Event listener for form submission
+// Registrar Service Worker y suscribir al usuario
+async function subscribeUserToPush() {
+  if (!("serviceWorker" in navigator)) {
+    console.error("Service Workers no están soportados en este navegador.");
+    return;
+  }
+
+  const registration = await navigator.serviceWorker.register("/service-worker.js");
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+  });
+
+  // Enviar suscripción al servidor
+  await fetch("/subscribe", {
+    method: "POST",
+    body: JSON.stringify(subscription),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  alert("Usuario suscrito a notificaciones push.");
+}
+
+// Convertir clave VAPID a formato Uint8Array
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; i++) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+// Botón para activar notificaciones
+document.getElementById("enable-push-btn").addEventListener("click", subscribeUserToPush);
+
+// Función para mostrar notificaciones locales
+function showNotification(title, body) {
+  if (Notification.permission === "granted") {
+    new Notification(title, { body });
+  } else if (Notification.permission !== "denied") {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        new Notification(title, { body });
+      }
+    });
+  }
+}
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -52,16 +105,3 @@ clearBtn.addEventListener("click", () => {
     showNotification("Records Cleared", "All employee records have been deleted.");
   }
 });
-
-// Show notification
-function showNotification(title, body) {
-  if (Notification.permission === "granted") {
-    new Notification(title, { body });
-  } else if (Notification.permission !== "denied") {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        new Notification(title, { body });
-      }
-    });
-  }
-}
