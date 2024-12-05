@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employee Manager</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="static/manifest.json">
 
- <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "4571e6e0-7363-40b7-bd2f-058948d1c540",
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "4571e6e0-7363-40b7-bd2f-058948d1c540",
+      });
     });
-  });
-</script>
+  </script>
 </head>
 <body class="bg-gray-900 text-white font-sans">
   <div class="container mx-auto py-10 px-4">
