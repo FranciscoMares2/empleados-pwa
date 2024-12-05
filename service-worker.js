@@ -1,12 +1,7 @@
-const cacheName = "employee-manager-v3";
-const assets = [
-  "/",
-  "/index.html",
-  "/app.js",
-  "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-];
+const cacheName = "employee-manager-v1";
+const assets = ["/", "/index.html", "/app.js", "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"];
 
-// Evento de instalación
+// Install event
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(cacheName).then((cache) => {
@@ -15,30 +10,33 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Evento de activación: limpiar caché antigua
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((name) => {
-          if (name !== cacheName) {
-            return caches.delete(name);
-          }
-        })
-      );
+// Fetch event
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
     })
   );
 });
 
-// Evento de fetch
-self.addEventListener("fetch", (event) => {
-  if (event.request.method === "GET") {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        return cachedResponse || fetch(event.request);
-      })
-    );
-  } else {
-    event.respondWith(fetch(event.request));
-  }
+self.addEventListener("push", (event) => {
+  const data = event.data.json(); 
+  self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: data.icon || "icon.png",
+    badge: data.badge || "icon.png",
+  });
 });
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('/service-worker.js')
+    .then((registration) => {
+      console.log('Service Worker registrado con éxito:', registration);
+    })
+    .catch((error) => {
+      console.error('Error al registrar el Service Worker:', error);
+    });
+}
+
+
