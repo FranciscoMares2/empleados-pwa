@@ -16,18 +16,7 @@ async function subscribeUserToPush() {
     applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
   });
 
-  // Enviar suscripción al servidor
-  await fetch("/subscribe", {
-    method: "POST",
-    body: JSON.stringify(subscription),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  alert("Usuario suscrito a notificaciones push.");
-}
-
+ 
 // Convertir clave VAPID a formato Uint8Array
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
