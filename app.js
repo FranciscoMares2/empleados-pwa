@@ -3,7 +3,6 @@ const table = document.getElementById("employee-table");
 const clearBtn = document.getElementById("clear-btn");
 const publicVapidKey = "BFX60-6BG7NRB2-3vR8LqrWcs3PO4S5ZBbuXb1000nyPow6CqiH6GgPwZqfuenlPHBFcH6yaeuMAekC62KKfXrE";
 
-// Registrar Service Worker y suscribir al usuario
 async function subscribeUserToPush() {
   if (!("serviceWorker" in navigator)) {
     console.error("Service Workers no están soportados en este navegador.");
@@ -16,7 +15,6 @@ async function subscribeUserToPush() {
     applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
   });
 
-  // Enviar suscripción al servidor
   await fetch("/subscribe", {
     method: "POST",
     body: JSON.stringify(subscription),
@@ -28,7 +26,6 @@ async function subscribeUserToPush() {
   alert("Usuario suscrito a notificaciones push.");
 }
 
-// Convertir clave VAPID a formato Uint8Array
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -45,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-// Función para mostrar notificaciones locales
 function showNotification(title, body) {
   if (Notification.permission === "granted") {
     new Notification(title, { body });
@@ -58,7 +54,6 @@ function showNotification(title, body) {
   }
 }
 
-// Añadir empleado a la tabla
 function addEmployeeToTable(name, role) {
   const row = document.createElement("tr");
   row.innerHTML = `
@@ -68,20 +63,17 @@ function addEmployeeToTable(name, role) {
   table.appendChild(row);
 }
 
-// Guardar empleado en localStorage
 function saveEmployee(name, role) {
   const employees = JSON.parse(localStorage.getItem("employees")) || [];
   employees.push({ name, role });
   localStorage.setItem("employees", JSON.stringify(employees));
 }
 
-// Cargar empleados desde localStorage
 function loadEmployees() {
   const employees = JSON.parse(localStorage.getItem("employees")) || [];
   employees.forEach((employee) => addEmployeeToTable(employee.name, employee.role));
 }
 
-// Evento para enviar el formulario
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -96,7 +88,6 @@ form.addEventListener("submit", (e) => {
   }
 });
 
-// Limpiar tabla y localStorage
 clearBtn.addEventListener("click", () => {
   if (confirm("¿Estás seguro de que quieres borrar todos los registros?")) {
     localStorage.removeItem("employees");
@@ -105,7 +96,6 @@ clearBtn.addEventListener("click", () => {
   }
 });
 
-// Cargar datos al inicio
 window.addEventListener("load", () => {
   loadEmployees();
 
