@@ -112,4 +112,35 @@ window.addEventListener("load", () => {
       console.error("Error al registrar el Service Worker:", error);
     });
   }
+  const pushBtn = document.getElementById("enable-push-btn");
+if (pushBtn) {
+  pushBtn.addEventListener("click", subscribeUserToPush);
+}
+
+const form = document.getElementById("employee-form");
+if (form) {
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const role = document.getElementById("role").value.trim();
+    if (name && role) {
+      addEmployeeToTable(name, role);
+      saveEmployee(name, role);
+      form.reset();
+      showNotification("Empleado Añadido", `${name} fue añadido correctamente.`);
+    }
+  });
+}
+
+const clearBtn = document.getElementById("clear-btn");
+if (clearBtn) {
+  clearBtn.addEventListener("click", () => {
+    if (confirm("¿Estás seguro de que quieres borrar todos los registros?")) {
+      localStorage.removeItem("employees");
+      table.innerHTML = "";
+      showNotification("Registros Borrados", "Todos los registros de empleados han sido eliminados.");
+    }
+  });
+}
+
 });
