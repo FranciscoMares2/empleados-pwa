@@ -16,7 +16,18 @@ async function subscribeUserToPush() {
     applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
   });
 
- 
+  // Enviar suscripción al servidor
+  await fetch("/subscribe", {
+    method: "POST",
+    body: JSON.stringify(subscription),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  alert("Usuario suscrito a notificaciones push.");
+}
+
 // Convertir clave VAPID a formato Uint8Array
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -45,6 +56,30 @@ function showNotification(title, body) {
   }
 }
 
+// Añadir empleado a la tabla
+function addEmployeeToTable(name, role) {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td class="py-2 px-4">${name}</td>
+    <td class="py-2 px-4">${role}</td>
+  `;
+  table.appendChild(row);
+}
+
+// Guardar empleado en localStorage
+function saveEmployee(name, role) {
+  const employees = JSON.parse(localStorage.getItem("employees")) || [];
+  employees.push({ name, role });
+  localStorage.setItem("employees", JSON.stringify(employees));
+}
+
+// Cargar empleados desde localStorage
+function loadEmployees() {
+  const employees = JSON.parse(localStorage.getItem("employees")) || [];
+  employees.forEach((employee) => addEmployeeToTable(employee.name, employee.role));
+}
+
+// Evento para enviar el formulario
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -55,42 +90,26 @@ form.addEventListener("submit", (e) => {
     addEmployeeToTable(name, role);
     saveEmployee(name, role);
     form.reset();
-    showNotification("Employee Added", `${name} was successfully added.`);
+    showNotification("Empleado Añadido", `${name} fue añadido correctamente.`);
   }
 });
 
-// Add employee to the table
-function addEmployeeToTable(name, role) {
-  const row = document.createElement("tr");
-  row.innerHTML = `
-    <td class="py-2 px-4">${name}</td>
-    <td class="py-2 px-4">${role}</td>
-  `;
-  table.appendChild(row);
-}
-
-// Save employee to localStorage
-function saveEmployee(name, role) {
-  const employees = JSON.parse(localStorage.getItem("employees")) || [];
-  employees.push({ name, role });
-  localStorage.setItem("employees", JSON.stringify(employees));
-}
-
-// Load employees on page load
-window.addEventListener("load", () => {
-  const employees = JSON.parse(localStorage.getItem("employees")) || [];
-  employees.forEach((employee) => addEmployeeToTable(employee.name, employee.role));
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
-  }
-});
-
-// Clear table and localStorage
+// Limpiar tabla y localStorage
 clearBtn.addEventListener("click", () => {
-  if (confirm("Are you sure you want to clear all records?")) {
+  if (confirm("¿Estás seguro de que quieres borrar todos los registros?")) {
     localStorage.removeItem("employees");
     table.innerHTML = "";
-    showNotification("Records Cleared", "All employee records have been deleted.");
+    showNotification("Registros Borrados", "Todos los registros de empleados han sido eliminados.");
+  }
+});
+
+// Cargar datos al inicio
+window.addEventListener("load", () => {
+  loadEmployees();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js").catch((error) => {
+      console.error("Error al registrar el Service Worker:", error);
+    });
   }
 });
