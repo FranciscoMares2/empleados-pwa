@@ -40,8 +40,10 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-// Botón para activar notificaciones
-document.getElementById("enable-push-btn").addEventListener("click", subscribeUserToPush);
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("enable-push-btn").addEventListener("click", subscribeUserToPush);
+});
+
 
 // Función para mostrar notificaciones locales
 function showNotification(title, body) {
